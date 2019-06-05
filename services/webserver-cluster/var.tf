@@ -31,3 +31,7 @@ variable "max_size" {
 variable "enable_autoscaling" {
   description = "if set to true, enable auto scaling"
 }
+
+variable "enable_new_user_data" {
+  description = "if set to true, use the new User Data script"
+}
