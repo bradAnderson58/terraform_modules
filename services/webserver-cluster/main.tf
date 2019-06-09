@@ -35,14 +35,21 @@ resource "aws_launch_configuration" "example" {
 }
 
 resource "aws_autoscaling_group" "example" {
+  name_prefix = "${var.cluster_name}-${aws_launch_configuration.example.name}"
+
   launch_configuration = "${aws_launch_configuration.example.id}"
   availability_zones   = ["${data.aws_availability_zones.all.names}"]
 
   load_balancers    = ["${aws_elb.example.name}"]
   health_check_type = "ELB"
 
-  min_size = "${var.min_size}"
-  max_size = "${var.max_size}"
+  min_size         = "${var.min_size}"
+  max_size         = "${var.max_size}"
+  min_elb_capacity = "${var.min_size}"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 
   tag {
     key                 = "Name"
@@ -61,6 +68,10 @@ resource "aws_elb" "example" {
     lb_protocol       = "http"
     instance_port     = "${var.server_port}"
     instance_protocol = "http"
+  }
+
+  lifecycle {
+    create_before_destroy = true
   }
 
   health_check {
